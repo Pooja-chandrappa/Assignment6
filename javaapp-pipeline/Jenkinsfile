@@ -15,7 +15,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo '🔄 Checking out source code...'
-                git branch: 'master', url: 'https://github.com/artisantek/jenkins.git'
+                git branch: 'master', url: 'https://github.com/Naveen-ASJ/jenkins.git'
             }
         }
         
@@ -118,7 +118,7 @@ pipeline {
         failure {
             emailext subject: "Pipeline Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
                      body: "Build failed. Please check the logs at ${env.BUILD_URL}",
-                     to: "artisantek.adithya@gmail.com"
+                     to: "naveen.jawali@gmail.com"
         }
     }
 } 
