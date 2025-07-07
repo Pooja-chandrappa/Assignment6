@@ -1,59 +1,44 @@
-# Jenkins Examples for DevOps Engineers
+# ArtisanTek Java Sample - Lightweight Edition
 
-This repository contains Java application examples demonstrating different Jenkins deployment strategies and CI/CD patterns.
+A beautiful and extremely lightweight Java 21 web application built with Javalin, designed for memory-constrained environments.
 
-## 📁 Projects Overview
+## Features
 
-### 🚀 **javaapp-pipeline/**
-Complete CI/CD pipeline example with automated testing and deployment.
-- **Type:** JAR with Jenkins Pipeline
-- **Use Case:** Production-ready CI/CD automation
-- **Features:** Automated testing, build, deploy with notifications
-- **Port:** 5000
+- ✨ Beautiful gradient background with animations
+- 🎨 Modern glassmorphism design
+- 📱 Responsive layout for mobile and desktop
+- 🎯 Java 21, runs in a tiny footprint.
 
-### 🏢 **javaapp-tomcat/**
-Enterprise deployment example for servlet containers.
-- **Type:** WAR for Tomcat
-- **Use Case:** Enterprise application server deployment
-- **Features:** Container-based deployment
-- **Access:** `/artisantek-app/` context path
+## Prerequisites
 
-### ⚡ **javaapp-standalone/**
-Simple standalone deployment example.
-- **Type:** Executable JAR
-- **Use Case:** Lightweight microservice deployment
-- **Features:** Direct execution, minimal overhead
-- **Port:** 5000
+- Java 21 JDK
+- Maven 3.6+
 
-## 🛠️ Quick Start
+## Build Instructions
 
 ```bash
-# Clone and navigate
-git clone <repo-url>
-cd jenkins/<project-name>
+# Navigate to the project directory
+cd jenkins/java-sample-21
 
-# Build any project
+# Clean and build the project to create a fat JAR
 mvn clean package
 
-# Run standalone/pipeline projects
-java -jar target/*.jar
-
-# Deploy tomcat project
-cp target/artisantek-app.war $TOMCAT_HOME/webapps/
+# The JAR file will be created in the target directory
+# File name: java-sample-21-1.0.0.jar
 ```
 
-## 🎯 Jenkins Use Cases
+## Run Instructions
 
-- **Pipeline Project:** Learn Jenkins declarative pipelines, automated testing, and deployment strategies
-- **Tomcat Project:** Understand WAR deployment and application server integration
-- **Standalone Project:** Practice simple build and deploy automation
+To run the application with a **strict memory limit** (e.g., 64MB of heap space), use the `-Xmx` flag. This is highly recommended for your EC2 instance.
 
-## 📋 Prerequisites
+```bash
+# Run the application with a 64MB memory cap
+java -jar target/java-sample-21-1.0.0.jar
 
-- Java 21+
-- Maven 3.6+
-- Jenkins (for pipeline examples)
-- Tomcat 9+ (for WAR deployment)
+# The application will start on port 5000
+# Open your browser and go to: http://localhost:5000
+```
 
----
-*Perfect for DevOps training, Jenkins job creation, and CI/CD pipeline examples.*
+This version uses significantly less memory than the Spring Boot application, making it ideal for your server.
+
+Enjoy your beautiful and lightweight ArtisanTek web application! 🎉 
