@@ -9,16 +9,16 @@ pipeline {
     stage('Unit Tests') {
       when { branch 'dev' }
       steps {
-        dir('javaapp-pipeline') {
+        
           sh 'mvn clean test'
-        }
+        
       }
     }
 
     stage('Sonar Analysis') {
       when { branch 'dev' }
       steps {
-        dir('javaapp-pipeline') {
+        
           withSonarQubeEnv('sonar') {
             sh """
               mvn clean verify sonar:sonar \
@@ -28,21 +28,21 @@ pipeline {
           }
         }
       }
-    }
+    
 
     stage('Package') {
       when { branch 'main' }
       steps {
-        dir('javaapp-pipeline') {
+        
           sh 'mvn clean package'
         }
       }
-    }
+    
 
     stage('Deploy') {
       when { branch 'main' }
       steps {
-        dir('javaapp-pipeline/target') {
+        
           sh '''
             if pgrep -f "java -jar java-sample-*.jar" > /dev/null; then
               pkill -f "java -jar java-sample-*.jar"
@@ -54,6 +54,6 @@ pipeline {
           '''
         }
       }
-    }
+    
   }
 }
