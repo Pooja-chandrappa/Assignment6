@@ -1,58 +1,60 @@
 pipeline {
-  agent { label 'agent'}
+  agent { label 'agent' }
 
   stages {
     stage('Checkout') {
-      steps { checkout scm }
+      steps {
+        checkout scm
+      }
     }
 
     stage('Unit Tests') {
-      when { branch 'dev' }
+      when {
+        branch 'dev'
+      }
       steps {
-        dir('javaapp-pipeline') {
-          sh 'mvn clean test'
-        }
+        sh 'mvn clean test'
       }
     }
 
     stage('Sonar Analysis') {
-      when { branch 'dev' }
+      when {
+        branch 'dev'
+      }
       steps {
-        dir('javaapp-pipeline') {
-          withSonarQubeEnv('sonar') {
-            sh """
-              mvn clean verify sonar:sonar \
-                -Dsonar.projectKey=java-app \
-                -Dsonar.branch.name=${env.BRANCH_NAME}
-            """
-          }
+        withSonarQubeEnv('sonar') {
+          sh '''
+            mvn clean verify sonar:sonar \
+              -Dsonar.projectKey=java-app \
+              -Dsonar.branch.name=${env.BRANCH_NAME}
+          '''
         }
       }
     }
 
     stage('Package') {
-      when { branch 'main' }
+      when {
+        branch 'main'
+      }
       steps {
-        dir('javaapp-pipeline') {
-          sh 'mvn clean package'
-        }
+        sh 'mvn clean package'
       }
     }
 
     stage('Deploy') {
-      when { branch 'main' }
+      when {
+        branch 'main'
+      }
       steps {
-        dir('javaapp-pipeline/target') {
-          sh '''
-            if pgrep -f "java -jar java-sample-*.jar" > /dev/null; then
-              pkill -f "java -jar java-sample-*.jar"
-              echo "App was running and has been killed."
-            else
-              echo "App is not running."
-            fi
-            JENKINS_NODE_COOKIE=dontKillMe nohup java -jar java-sample-*.jar > app.log 2>&1 &
-          '''
-        }
+        sh '''
+          if pgrep -f "java -jar java-sample-*.jar" > /dev/null; then
+            pkill -f "java -jar java-sample-*.jar"
+            echo "App was running and has been killed."
+          else
+            echo "App is not running."
+          fi
+          JENKINS_NODE_COOKIE=dontKillMe nohup java -jar target/java-sample-*.jar > app.log 2>&1 &
+        '''
       }
     }
   }
