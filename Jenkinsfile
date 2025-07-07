@@ -17,21 +17,6 @@ pipeline {
       }
     }
 
-    stage('Sonar Analysis') {
-      when {
-        branch 'dev'
-      }
-      steps {
-        withSonarQubeEnv('sonar') {
-          sh '''
-            mvn clean verify sonar:sonar \
-              -Dsonar.projectKey=java-app \
-              -Dsonar.branch.name=${env.BRANCH_NAME}
-          '''
-        }
-      }
-    }
-
     stage('Package') {
       when {
         branch 'main'
@@ -47,8 +32,8 @@ pipeline {
       }
       steps {
         sh '''
-          if pgrep -f "java -jar java-sample-*.jar" > /dev/null; then
-            pkill -f "java -jar java-sample-*.jar"
+          if pgrep -f "java -jar target/java-sample-*.jar" > /dev/null; then
+            pkill -f "java -jar target/java-sample-*.jar"
             echo "App was running and has been killed."
           else
             echo "App is not running."
@@ -56,6 +41,15 @@ pipeline {
           JENKINS_NODE_COOKIE=dontKillMe nohup java -jar target/java-sample-*.jar > app.log 2>&1 &
         '''
       }
+    }
+  }
+
+  post {
+    always {
+      echo "Pipeline completed on branch ${env.BRANCH_NAME}"
+    }
+    failure {
+      echo "Build failed on branch ${env.BRANCH_NAME}"
     }
   }
 }
