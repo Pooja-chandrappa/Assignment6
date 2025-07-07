@@ -3,33 +3,21 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      steps {
-        checkout scm
-      }
+      steps { checkout scm }
     }
 
     stage('Unit Tests') {
-      when {
-        branch 'dev'
-      }
-      steps {
-        sh 'mvn clean test'
-      }
+      when { branch 'dev' }
+      steps { sh 'mvn clean test' }
     }
 
     stage('Package') {
-      when {
-        branch 'main'
-      }
-      steps {
-        sh 'mvn clean package'
-      }
+      when { anyOf { branch 'main'; branch 'master' } }
+      steps { sh 'mvn clean package' }
     }
 
     stage('Deploy') {
-      when {
-        branch 'main'
-      }
+      when { anyOf { branch 'main'; branch 'master' } }
       steps {
         sh '''
           if pgrep -f "java -jar target/java-sample-*.jar" > /dev/null; then
@@ -45,11 +33,7 @@ pipeline {
   }
 
   post {
-    always {
-      echo "Pipeline completed on branch ${env.BRANCH_NAME}"
-    }
-    failure {
-      echo "Build failed on branch ${env.BRANCH_NAME}"
-    }
+    always { echo "Pipeline finished on branch ${env.BRANCH_NAME}" }
+    failure { echo "Pipeline failed on branch ${env.BRANCH_NAME}" }
   }
 }
