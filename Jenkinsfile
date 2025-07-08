@@ -1,39 +1,57 @@
 pipeline {
-  agent { label 'agent' }
+    agent { label 'agent' }
 
-  stages {
-    stage('Checkout') {
-      steps { checkout scm }
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Branch Name: ${env.BRANCH_NAME}"
+                checkout scm
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo "Running Unit Tests..."
+                sh 'mvn clean test'
+            }
+        }
+
+       
+
+        stage('Build') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo "Running Build on main branch..."
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo "Deploying application on main branch..."
+                sh '''
+                    if pgrep -f "java -jar java-sample-21-1.0.0.jar" > /dev/null; then
+                        pkill -f "java -jar java-sample-21-1.0.0.jar"
+                        echo "App was running and has been killed"
+                    else
+                        echo "App is not running"
+                    fi
+
+                    JENKINS_NODE_COOKIE=dontKillMe nohup java -jar java-sample-21-1.0.0.jar > app.log 2>&1 &
+                '''
+            }
+        }
     }
 
-    stage('Unit Tests') {
-      when { branch 'dev' }
-      steps { sh 'mvn clean test' }
+    post {
+        always {
+            echo "Cleaning up workspace"
+            cleanWs()
+        }
     }
-
-    stage('Package') {
-      when { anyOf { branch 'main'; branch 'master' } }
-      steps { sh 'mvn clean package' }
-    }
-
-    stage('Deploy') {
-      when { anyOf { branch 'main'; branch 'master' } }
-      steps {
-        sh '''
-          if pgrep -f "java -jar target/java-sample-*.jar" > /dev/null; then
-            pkill -f "java -jar target/java-sample-*.jar"
-            echo "App was running and has been killed."
-          else
-            echo "App is not running."
-          fi
-          JENKINS_NODE_COOKIE=dontKillMe nohup java -jar target/java-sample-*.jar > app.log 2>&1 &
-        '''
-      }
-    }
-  }
-
-  post {
-    always { echo "Pipeline finished on branch ${env.BRANCH_NAME}" }
-    failure { echo "Pipeline failed on branch ${env.BRANCH_NAME}" }
-  }
 }
