@@ -20,7 +20,7 @@ pipeline {
 
         stage('Build') {
             when {
-                branch 'main'
+                branch 'master'
             }
             steps {
                 echo "Running Build on main branch..."
@@ -30,7 +30,7 @@ pipeline {
 
         stage('Deploy') {
             when {
-                branch 'main'
+                branch 'master'
             }
             steps {
                 echo "Deploying application on main branch..."
